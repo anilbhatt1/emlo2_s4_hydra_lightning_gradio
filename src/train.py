@@ -8,6 +8,7 @@ from lightning import Callback, LightningDataModule, LightningModule, Trainer
 from lightning.pytorch.loggers import Logger
 from omegaconf import DictConfig
 
+
 rootutils.setup_root(__file__, indicator=".project-root", pythonpath=True)
 # ------------------------------------------------------------------------------------ #
 # the setup_root above is equivalent to:
@@ -83,6 +84,12 @@ def train(cfg: DictConfig) -> Tuple[Dict[str, Any], Dict[str, Any]]:
         trainer.fit(model=model, datamodule=datamodule, ckpt_path=cfg.get("ckpt_path"))
 
     train_metrics = trainer.callback_metrics
+
+    log.info("Scripting model...")
+
+    scripted_model = model.to_torchscript(method="script")
+    torch.jit.save(scripted_model, f"{cfg.paths.output_dir}/model.script.pt")
+    log.info(f"Scripted model saved to {cfg.paths.output_dir}/model.script.pt")
 
     if cfg.get("test"):
         log.info("Starting testing!")
