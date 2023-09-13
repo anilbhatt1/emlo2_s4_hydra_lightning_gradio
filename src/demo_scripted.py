@@ -56,7 +56,7 @@ def demo(cfg: DictConfig) -> Tuple[dict, dict]:
         live=True,
     )
 
-    demo.launch()
+    demo.launch(share=True)
 
 @hydra.main(version_base="1.3", config_path="../configs", config_name="demo_scripted.yaml")
 def main(cfg: DictConfig) -> None:
